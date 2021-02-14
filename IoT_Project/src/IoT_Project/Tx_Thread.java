@@ -47,11 +47,9 @@ public class Tx_Thread extends Thread {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
-			
 					
 			if( (tco.getTco()) == 4) { 
-				System.out.println("TX : case 4 start");
+				System.out.println("TX : case 4 start(device id: " + device.id + ")");
 				/* 제어 메시지 전송 */
 				sendByteBuffer.put((byte)4);
 				

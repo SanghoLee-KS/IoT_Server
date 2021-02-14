@@ -2,7 +2,6 @@ package IoT_Project;
 
 import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
 
 public class DBConnection {
 	private Connection con = null;
@@ -21,7 +20,6 @@ public class DBConnection {
 
 		try {
 			con = DriverManager.getConnection(jdbcUrl, dbId, dbPass);
-			System.out.println("데이터베이스와 연결되었습니다. " + "(DB ID: " + dbId +")");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -38,10 +36,6 @@ public class DBConnection {
 			pstmt.setString(1, macAddr);
 			pstmt.setTimestamp(2, timestamp);
 			pstmt.executeUpdate();
-			
-			System.out.println("데이터베이스에 데이터가 저장되었습니다. (Table: device)");
-			System.out.println("(정보)");
-			System.out.println("MAC Address: " + macAddr);
 			
 			// 등록 후 디바이스 id 반환
 			query = "select id from device where mac_addr = ?";
@@ -75,12 +69,6 @@ public class DBConnection {
 			pstmt.setInt(3, sensorData);
 			pstmt.setTimestamp(4, timestamp); // 임시
 			pstmt.executeUpdate();
-			
-			System.out.println("데이터베이스에 데이터가 저장되었습니다. (Table: status)");
-			System.out.println("(정보)");
-			System.out.println("Device ID: " + deviceId);
-			System.out.println("Action: " + action);
-			System.out.println("Sensor Data: " + sensorData);
 			
 		} catch(SQLException e) {
 			e.printStackTrace();

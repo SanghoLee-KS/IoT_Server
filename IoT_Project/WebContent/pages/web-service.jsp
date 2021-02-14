@@ -1,8 +1,19 @@
-<%@page import="org.apache.catalina.tribes.transport.RxTaskPool"%>
+<%@page import="java.awt.Window"%>
 <%@page import="IoT_Project.DBConnection"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*"%>
+
+<%
+	
+	DBConnection db = new DBConnection();
+	Connection con = db.getConnection();
+	PreparedStatement pstmt = null;
+	ResultSet rs = null;
+	
+	int idCheck = 0;
+
+%>
 
 <html>
 <head>
@@ -21,6 +32,17 @@
 		return tempId;
 	}
 	
+	// 일정시간마다 DBConnection의 isUpdated 변수 확인
+	
+	setTimeout(function () {
+	<%
+	
+	
+	%>
+	
+	}, 3000);
+	
+	
 
 </script>
 <title>침입 감지 시스템</title>
@@ -37,11 +59,7 @@
 		</tr>
 
 		<%
-		DBConnection db = new DBConnection();
-		Connection con = db.getConnection();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-
+		
 		try {
 			/* 가져오기 - 디바이스id, 디바이스 맥주소, 디바이스 위치정보, 문 상태정보, 디바이스 등록일 */
 			
@@ -49,23 +67,25 @@
 			 * 가장 최근의 데이터를 가지고 온다.
 			 * 가장 최근 데이터 -> status 테이블에서 id값이 가장 높은 데이터
 			 */
-			String query = 
-					"SELECT device.id, device.position, status.id, status.action, status.time " +
-					"FROM device, status " +
-					"WHERE device.id = status.device_id " +
-					"AND status.id in (SELECT max(status.id) FROM status GROUP BY status.device_id)";
-			
+			 String query = 
+				"SELECT device.id, device.position, status.id, status.action, status.time " +
+				"FROM device, status " +
+				"WHERE device.id = status.device_id " +
+				"AND status.id in (SELECT max(status.id) FROM status GROUP BY status.device_id)";
+			 
 			 // 쿼리문 실행			
 			pstmt = con.prepareStatement(query);
 			rs = pstmt.executeQuery();
 			
 			// 데이터 가져오기
-			while (rs.next()) {
+			while (rs.next()) { 
 				int statusId = rs.getInt("status.id");  
 				int id = rs.getInt("device.id");
 				String position = rs.getString("position");
 				String doorState = rs.getString("action");
 				Timestamp time = rs.getTimestamp("time");
+				
+				
 				
 		%>
 		<tr id="data">
@@ -87,7 +107,7 @@
 			<td width="200">
 				<form action="deviceLog.jsp" target="_blank" method="post">
 					<input type="text" value="<%=id%>" name="deviceId" style="display: none;" readonly>
-					<button id=<%=id%> onclick="revise(this.id)">수정</button>
+					<button type="button" id=<%=id%> onclick="revise(this.id)">수정</button>
 					<input type="submit" value="로그확인">
 				</form>
 			</td>	

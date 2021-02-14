@@ -19,6 +19,7 @@
 <body>
 <script type="text/javascript">
 	window.self.close();
+	opener.parent.location.reload();
 </script>
 </body>
 </html>

@@ -26,6 +26,7 @@
 			var text = $("#position").val();
 
 			opener.document.getElementById(parentId).innerHTML = text;
+			
 		});
 		
 		$("#cancel").click(function() {

@@ -6,17 +6,14 @@ import java.io.OutputStream;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
 import java.sql.*;
-
+import java.util.ArrayList;
 
 public class IoT_Server {
-
 	public static final int PORT = 12344;
-	
-	private static ArrayList<ThreadController> tcList= new ArrayList<ThreadController>(); 
-	
-	public static void main(String[] args) {
+ 	private static ArrayList<ThreadController> tcList = new ArrayList<ThreadController>();
+ 	
+ 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
 		ServerSocket serverSock = null;
@@ -104,8 +101,6 @@ public class IoT_Server {
 		    			sendByteBuffer.put((byte)0);
 		    			sendByteBuffer.putInt(device.getId()); //id
 		            	
-		    			
-		    			
 		    			OutputStream os = socket.getOutputStream();
 		    			os.write(sendByteBuffer.array());
 		    			os.flush();
@@ -114,15 +109,12 @@ public class IoT_Server {
 		    			Rx_Thread rx_Thread = new Rx_Thread(tco, socket, device);
 						Tx_Thread tx_Thread = new Tx_Thread(tco, socket, device);
 						
-						tcList.add( new ThreadController(device.getId(), tco, tx_Thread, rx_Thread));
+						tcList.add(new ThreadController(device.getId(), tco, rx_Thread, tx_Thread));
 						
 						rx_Thread.start();
 						tx_Thread.start();
 		    			
-		    			
 		    			break;
-		    			
-		    			
 					}
 					//op != 1
 					else {
@@ -131,15 +123,8 @@ public class IoT_Server {
 						socket.close();
 						break;
 					}
-
-				}
-				
-			}
-				
-			
-			
-		
-			
+				}	
+			}			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -169,10 +154,44 @@ public class IoT_Server {
 	   return sb.toString();
 	}
 	
-	public static ArrayList<ThreadController> getTcList() {
-		return tcList;
+	// 방법 1
+	public static void sendSignal(int deviceId) {
+		for(ThreadController tc : tcList) {
+			if(tc.getDeviceId() == deviceId) {
+				// id값이 같으면 tx 쓰레드 실행
+				// --> tcList 비어있다고 뜸(참조 불가능)
+			}
+		}
+		
+	}
+	/*
+	// 방법 2 파일입출력으로 tcList 저장하기
+	// --> Socket은 파일입출력으로 저장 불가
+	public static void sendSignal(int deviceId, int index) {
+		try {
+			fileInputStream = new FileInputStream("/Users/lim/eclipse-workspace/IoT_Project/src/IoT_Project/tcList");
+			objectInputStream = new ObjectInputStream(fileInputStream);
+			
+			ArrayList<ThreadController> list = (ArrayList<ThreadController>)objectInputStream.readObject();
+			
+			for(ThreadController tc : list) {
+				System.out.println("tc device id: " + tc.getDeviceId());
+				if(tc.getDeviceId() == deviceId) {
+					tc.getTco().setTco(index);
+					System.out.println("변경완료");
+				}
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
+	*/
 }
 
 
