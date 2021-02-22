@@ -17,6 +17,10 @@ html, body {
 	font-weight: bold;
 }
 
+#disabledDevice {
+	background-color: #dcdcdc;
+}
+
 #logBox {
 	width: 60%;
 	margin: auto;

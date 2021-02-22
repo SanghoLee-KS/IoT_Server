@@ -12,12 +12,14 @@ public class Tx_Thread extends Thread {
 	private Device device;
 	private TCO tco;
 	private OutputStream os = null;
+	private int devId = 0;
 	ReentrantLock lock = new ReentrantLock();
 	
 	public Tx_Thread(TCO tco, Socket socket, Device device) {
 		this.socket = socket;
 		this.device = device;
 		this.tco = tco;
+		devId = device.getId();
 	}
 	
 	@Override
@@ -37,12 +39,12 @@ public class Tx_Thread extends Thread {
 			
 		while(true) {
 			if(this.socket == null) {
-				System.out.println("Tx : socket disabled");
+				System.out.println("[TX" + devId + "] socket disabled");
 				break;
 			}
 	
 			if(this.socket.isClosed()) {
-				System.out.println("Tx : socket closed");
+				System.out.println("[TX" + devId + "] socket closed");
 				break;
 			}
 			try {
@@ -53,7 +55,7 @@ public class Tx_Thread extends Thread {
 			}
 					
 			if( (tco.getTco()) == 4) { 
-				System.out.println("TX : case 4 start(device id: " + device.id + ")");
+				System.out.println("[TX" + devId + "] case 4 start(device id: " + device.id + ")");
 				/* 제어 메시지 전송 */
 				sendByteBuffer.put((byte)4);
 				
@@ -101,7 +103,7 @@ public class Tx_Thread extends Thread {
 				
 			}
 			else if ( (tco.getTco()) == 8 ) { 
-				System.out.println("TX : [" + device.id + "] RESPONSE HeartBeat...");
+				System.out.println("[TX" + devId + "] RESPONSE HeartBeat...");
 				/* HeartBeat Response */
 				sendByteBuffer.put((byte)8);
 				
@@ -177,7 +179,7 @@ public class Tx_Thread extends Thread {
 				sendByteBuffer.putInt(0);
 				///////////////////////////////////////////////
 				
-				System.out.println("TX : [" + device.id + "] DISCONNECT...");
+				System.out.println("[TX" + devId + "] DISCONNECT...");
 				try {
 					os.write(sendByteBuffer.array());
 					os.flush();
@@ -218,7 +220,7 @@ public class Tx_Thread extends Thread {
 			
 		}
 		
-		
+		System.out.println("[TX" + devId + "] Thread EXIT");
 		
 	}
 }

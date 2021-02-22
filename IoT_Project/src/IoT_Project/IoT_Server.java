@@ -15,6 +15,12 @@ public class IoT_Server {
 	public static final int PORT = 12344;
  	private static ArrayList<ThreadController> tcList = new ArrayList<ThreadController>();
  	ServerSocket serverSock = null;
+ 	
+ 	private DBConnection db = new DBConnection();
+	private Connection con = db.getConnection();
+	private PreparedStatement pstmt = null;
+	private ResultSet rs = null;
+ 	
 	//singleton
 	private static IoT_Server instance = null;
 	public static IoT_Server getInstance() throws IOException {
@@ -85,10 +91,7 @@ public class IoT_Server {
 			    			
 			            	//TODO : SELECT ID FROM DEVICE where mac = (this.mac)
 			    			
-			    			DBConnection db = new DBConnection();
-			    			Connection con = db.getConnection();
-			    			PreparedStatement pstmt = null;
-			    			ResultSet rs = null;
+			    			
 			    			
 			    			String query = "select id from device where mac_addr=?";
 			    			
@@ -198,29 +201,17 @@ public class IoT_Server {
 	
 	public static void checkDevice() {
 		
-//		Iterator iter = tcList.iterator();
-//		while(iter.hasNext()) { 
-//			if("melon".equals(iter.next())) {
-//				iter.remove();
-//			}
-//		}
-
 		for(int i=0; i<tcList.size(); i++) {
 			if(tcList.get(i).getSocket().isClosed()) {
 				System.out.println(tcList.get(i).getDeviceId()+"'s socket isClosed!");
 				tcList.remove(i);
 			}
-				
+			
 		}
-		
-//		for(ThreadController tc : tcList) {
-//			
-//			if(tc.getSocket().isClosed()) {
-//				System.out.println(tc.getDeviceId() +"'s socket isClosed!");
-//				//tcList.remove(tc);
-//			}
-//		}
-
+	}
+	
+	public static ArrayList<ThreadController> getTcList() {
+		return tcList;
 	}
 	
 }

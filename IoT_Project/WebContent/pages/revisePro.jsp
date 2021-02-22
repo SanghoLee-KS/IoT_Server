@@ -9,6 +9,7 @@
 	   
    	DBConnection db = new DBConnection();
 	db.update(id, position);
+	db.connectionClose();
 %>
 
 <!DOCTYPE html>

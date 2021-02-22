@@ -90,6 +90,32 @@ public class DBConnection {
 		}
 	}
 	
+	public void deleteDevice(int deviceId) {
+		String query = "delete from device where id=?";
+		
+		try {
+			pstmt = con.prepareStatement(query);
+			pstmt.setInt(1, deviceId);
+			pstmt.executeUpdate(); 
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void deleteStatus(int deviceId) {
+		String query = "delete from status where device_id=?";
+		
+		try {
+			pstmt = con.prepareStatement(query);
+			pstmt.setInt(1, deviceId);
+			pstmt.executeUpdate(); 
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/* DB연결종료 메소드 */
 	public void connectionClose() {
 		try {

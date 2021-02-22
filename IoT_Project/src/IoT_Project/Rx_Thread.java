@@ -44,11 +44,16 @@ public class Rx_Thread extends Thread {
 					System.out.println("Socket null");
 					break;
 				}
-
+				
+				if(socket.isClosed()) {
+					System.out.println("[Rx" + devId + "] Socket closed");
+					break;
+				}
+				
 				//HeartBeat Check
 				heartTimeCurrent = System.currentTimeMillis();
 				if( (heartTimeCurrent - heartTimePrev)/1000 > 31) {
-					System.out.println("Rx[" + devId + "] HeartBeat arrested");
+					System.out.println("[Rx" + devId + "] HeartBeat arrested");
 					lock.lock();
 					try {
 	            	  sleep(1);
@@ -96,23 +101,23 @@ public class Rx_Thread extends Thread {
 					System.arraycopy(buff, 16, tempData, 0, 4);
 					tempBuffer = ByteBuffer.wrap(tempData);
 					int data = tempBuffer.order(ByteOrder.LITTLE_ENDIAN).getInt();
-					System.out.println("[" + devId + "]Data : " + data);
+					System.out.println("[RX" + devId + "]Data : " + data);
 
 					// TODO : Insert into StatusTable
-					System.out.println("[RX]데이터 수신");
-					System.out.println("[RX]Device ID: " + id);
-					System.out.println("[RX]Action Code: " + tempAction);
-					System.out.println("[RX]Data: " + data);
+					System.out.println("[RX" + devId + "]데이터 수신");
+					System.out.println("[RX" + devId + "]Device ID: " + id);
+					System.out.println("[RX" + devId + "]Action Code: " + tempAction);
+					System.out.println("[RX" + devId + "]Data: " + data);
 					
 					if(device.getId() == id) {
 						if(tempAction == 1) { // action: 1 -> 열림
 							db.insertStatus(id, "열림", data);
-							System.out.println("[RX]status테이블에 정보가 저장되었습니다.(열림)");
+							System.out.println("[RX" + devId + "]status테이블에 정보가 저장되었습니다.(열림)");
 						}
 						
 						else if(tempAction == 0) { // action: 0 -> 닫힘
 							db.insertStatus(id, "닫힘", data);
-							System.out.println("[RX]status테이블에 정보가 저장되었습니다.(닫힘)");
+							System.out.println("[RX" + devId + "]status테이블에 정보가 저장되었습니다.(닫힘)");
 						}
 						
 					}
@@ -147,7 +152,7 @@ public class Rx_Thread extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		System.out.println("[RX" + devId + "] Thread EXIT");
 	}
 
 	

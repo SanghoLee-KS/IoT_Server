@@ -6,6 +6,7 @@
 
 <% 
 	int id = Integer.parseInt(request.getParameter("deviceId"));
+	
 %>
 
 <!DOCTYPE html>
@@ -37,21 +38,13 @@
 			<td width="200">상태정보</td>
 			<td width="200">측정값</td>
 		</tr>
-	<%
+	<%	
+		DBConnection db = new DBConnection();
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
 		try {
-			String jdbcUrl = "jdbc:mysql://localhost:3306/iotDB?serverTimezone=Asia/Seoul";
-
-			String dbId = "ks";
-			String dbPass = "ks";
-
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			// DB연결
-			con = DriverManager.getConnection(jdbcUrl, dbId, dbPass);
-		
 			/* 전체 로그 조회, 측정 시간 오름차순 */
 			String query = 
 				"SELECT status.time, device.position, status.action, status.sensor_data " +
