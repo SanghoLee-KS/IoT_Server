@@ -10,8 +10,6 @@
 	Connection con = db.getConnection();
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
-	
-	int idCheck = 0;
 
 %>
 
@@ -31,24 +29,9 @@
 	function getId() {
 		return tempId;
 	}
-	
-	// 일정시간마다 DBConnection의 isUpdated 변수 확인
-	
-	setTimeout(function () {
-	<%
-	
-	
-	%>
-	
-	}, 3000);
-	
-	
-
 </script>
-<title>침입 감지 시스템</title>
 </head>
 <body>
-	<p style="font-size: 20px; margin-top: 30px">관리자 인터페이스</p>
 	<table id="deviceTable" border="0" style="margin-bottom: 100px">
 		<tr id="head">
 			<td width="200">디바이스ID</td>
@@ -85,8 +68,6 @@
 				String doorState = rs.getString("action");
 				Timestamp time = rs.getTimestamp("time");
 				
-				
-				
 		%>
 		<tr id="data">
 			<td width="200"><%=id%></td>
@@ -120,56 +101,5 @@
 		} 
 		%>
 	</table>
-	
-	<p style="font-size: 18px; ">전체 로그 정보</p>
-	<table id="logBox" border="0">
-		<tr>
-			<td width="350">측정시간</td>
-			<td width="350">위치</td>
-			<td width="200">상태정보</td>
-			<td width="200">측정값</td>
-		</tr>
-		<%
-		try {
-			/* 전체 로그 조회, 측정 시간 오름차순 */
-			String query = 
-				"SELECT status.time, device.position, status.action, status.sensor_data " +
-				"FROM device, status " +
-				"WHERE device.id = status.device_id " +
-				"ORDER BY status.time asc";
-			
-			pstmt = con.prepareStatement(query);
-			rs = pstmt.executeQuery();
-			
-			while(rs.next()) {
-				Timestamp time = rs.getTimestamp("time");
-				String position = rs.getString("position");
-				String doorState = rs.getString("action");
-				int sensorData = rs.getInt("sensor_data");
-			
-		%>
-		<tr>
-			<% if (doorState.equals("열림")) {%>
-				<td width="350" style="color: red"><%=time %></td>
-				<td width="350" style="color: red"><%=position %></td>
-				<td width="200" style="color: red"><%=doorState %></td>
-				<td width="200" style="color: red"><%=sensorData %></td>
-			<%} if (doorState.equals("닫힘")) {%>
-				<td width="350"><%=time %></td>
-				<td width="350"><%=position %></td>
-				<td width="200"><%=doorState %></td>
-				<td width="200"><%=sensorData %></td>
-			<%} %>
-		</tr>
-		
-		<%
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-		%>
-	</table>
-	
 </body>
 </html>

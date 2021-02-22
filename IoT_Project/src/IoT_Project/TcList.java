@@ -1,5 +1,6 @@
 package IoT_Project;
 
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class TcList {
@@ -18,8 +19,8 @@ public class TcList {
 	}
 	
 	
-	public void setTcList(int deviceId, TCO tco, Thread rxThread, Thread txThread) {
-		list.add(new ThreadController(deviceId, tco, txThread, rxThread));
+	public void setTcList(int deviceId, TCO tco, Thread rxThread, Thread txThread, Socket socket) {
+		list.add(new ThreadController(deviceId, tco, txThread, rxThread, socket));
 	}
 	
 	public ArrayList<ThreadController> getTcList() {

@@ -13,10 +13,11 @@
 <% int id = Integer.parseInt(request.getParameter("deviceId")); %>
 
 <%	
-	System.out.println("signal test");
 	
-	IoT_Server.sendSignal(id); // 얻은 device id(제어 신호를 보내고 싶은 디바이스 id)
+	IoT_Server server = IoT_Server.getInstance();
+	server.sendSignal(id); // 얻은 device id(제어 신호를 보내고 싶은 디바이스 id)
 							   // server로 전송
+
 %>
 
 <!DOCTYPE html>

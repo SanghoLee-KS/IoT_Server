@@ -41,6 +41,10 @@ public class Tx_Thread extends Thread {
 				break;
 			}
 	
+			if(this.socket.isClosed()) {
+				System.out.println("Tx : socket closed");
+				break;
+			}
 			try {
 				sleep(1000);
 			} catch (InterruptedException e1) {
@@ -96,7 +100,53 @@ public class Tx_Thread extends Thread {
 				}
 				
 			}
+			else if ( (tco.getTco()) == 8 ) { 
+				System.out.println("TX : [" + device.id + "] RESPONSE HeartBeat...");
+				/* HeartBeat Response */
+				sendByteBuffer.put((byte)8);
 				
+				sendByteBuffer.put(device.getMac());
+				//sendByteBuffer.put(new byte[6-device.getMac().length]);
+				
+				sendByteBuffer.put((byte)0);
+				
+				sendByteBuffer.putInt(device.getId());
+
+				//action
+				//sendByteBuffer.put(?);
+				
+				//data
+				//sendByteBuffer.putInt();
+				
+				///////////////////////////////////////////////
+				sendByteBuffer.put((byte)0);
+				sendByteBuffer.put((byte)0);
+				sendByteBuffer.put((byte)0);
+				sendByteBuffer.put((byte)0);
+				
+				sendByteBuffer.putInt(0);
+				///////////////////////////////////////////////
+
+				
+				try {
+					os.write(sendByteBuffer.array());
+					os.flush();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				sendByteBuffer.clear();
+				
+				lock.lock();
+				try {
+					tco.setTco(0);
+				}
+				finally {
+					lock.unlock();
+				}
+				
+			}
 			else if ( (tco.getTco()) == 10 ) { 
 				//TODO: 종료&초기화 메시지 차이점 찾기
 				//종료 : socket.close(); close(); Rx->
@@ -112,8 +162,22 @@ public class Tx_Thread extends Thread {
 				
 				sendByteBuffer.putInt(device.getId());
 				
+				//action
+				//sendByteBuffer.put(?);
 				
-				System.out.println(sendByteBuffer.array());
+				//data
+				//sendByteBuffer.putInt();
+				
+				///////////////////////////////////////////////
+				sendByteBuffer.put((byte)0);
+				sendByteBuffer.put((byte)0);
+				sendByteBuffer.put((byte)0);
+				sendByteBuffer.put((byte)0);
+				
+				sendByteBuffer.putInt(0);
+				///////////////////////////////////////////////
+				
+				System.out.println("TX : [" + device.id + "] DISCONNECT...");
 				try {
 					os.write(sendByteBuffer.array());
 					os.flush();
@@ -124,14 +188,21 @@ public class Tx_Thread extends Thread {
 				
 				sendByteBuffer.clear();
 				
-				/* 초기화 메시지 전송 */
 				lock.lock();
 				try {
-					tco.setTco(0);
+            	  sleep(1);
+                  tco.setTco(-1);
+                  socket.close();
+				} catch(InterruptedException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}finally {
+                  lock.unlock();
 				}
-				finally {
-					lock.unlock();
-				}
+				 
+				break;
 			}
 				
 			else {
@@ -146,9 +217,6 @@ public class Tx_Thread extends Thread {
 			}
 			
 		}
-		
-		 
-        System.out.println("While Out");
 		
 		
 		

@@ -18,12 +18,14 @@ public class Rx_Thread extends Thread {
 	private int devId = 0;
 	ReentrantLock lock = new ReentrantLock();
 	private DBConnection db = new DBConnection();
-
+	private long heartTimePrev, heartTimeCurrent;
+	
 	public Rx_Thread(TCO tco, Socket socket, Device device) {
 		this.socket = socket;
 		this.device = device;
 		this.tco = tco;
 		devId = device.getId();
+		heartTimePrev = heartTimeCurrent = System.currentTimeMillis();
 	}
 
 	@Override
@@ -39,10 +41,32 @@ public class Rx_Thread extends Thread {
 
 			while (true) {
 				if (this.socket == null) {
+					System.out.println("Socket null");
 					break;
 				}
 
+				//HeartBeat Check
+				heartTimeCurrent = System.currentTimeMillis();
+				if( (heartTimeCurrent - heartTimePrev)/1000 > 31) {
+					System.out.println("Rx[" + devId + "] HeartBeat arrested");
+					lock.lock();
+					try {
+	            	  sleep(1);
+	                  tco.setTco(-1);
+					} catch(InterruptedException e) {
+					} finally {
+	                  lock.unlock();
+					}
+					socket.close();
+					break;
+				}
+				
+				try {
 				read = bis.read(buff, 0, 1024);
+				}
+				catch(Exception e ){
+					continue;
+				}
 				if (read < 0) {
 					break;
 				}
@@ -92,10 +116,6 @@ public class Rx_Thread extends Thread {
 						}
 						
 					}
-					
-					
-					
-
 //                  ///////////호출방식///////////////////////////////////
 //                  lock.lock();
 //               try {
@@ -109,6 +129,17 @@ public class Rx_Thread extends Thread {
 //                  /////////////////////////////////////////////////
 
 				}
+				if (messageOP == 7) {
+					heartTimePrev = heartTimeCurrent;
+					lock.lock();
+					try {
+	            	  sleep(1);
+	                  tco.setTco(8);
+					} catch(InterruptedException e) {
+					} finally {
+	                  lock.unlock();
+					}
+				}
 
 			}
 
@@ -119,21 +150,8 @@ public class Rx_Thread extends Thread {
 
 	}
 
-	public String byteToHex(byte[] b) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 5; i >= 0; i--) {
-			if (b[i] < 16) {
-				System.out.print("0");
-			}
-			// System.out.print(b[i]);
-			sb.append(String.format("%02x", b[i] & 0xff));
-			if (i > 0) {
-				sb.append(String.format(":"));
-			}
-
-		}
-
-		return sb.toString();
-	}
+	
+	
+	
 
 }
